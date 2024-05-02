@@ -7,7 +7,7 @@ import pandas as pd
 
 
 URL = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
-INTERVAL = 30
+INTERVAL = 300
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
