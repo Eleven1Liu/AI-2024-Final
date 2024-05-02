@@ -21,8 +21,9 @@ while True:
     
     if r.status_code == 200:
         df = pd.DataFrame(r.json())
-        df.to_csv(f"{DATA_DIR}/{formatted_time}.csv")
+        df.to_csv(f"{DATA_DIR}/{formatted_time}.csv", index=False)
     else:
-        print(f"[{formatted_time}] Failed to retrieve data from the URL")
+        with open("error.log", "a") as f:
+            f.write("[{formatted_time}] Failed to retrieve data from the url.")
     
     time.sleep(INTERVAL)
