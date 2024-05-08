@@ -28,7 +28,7 @@ def download_data(data_dir, interval):
     except SocketError as e:
         # socket error with out status code, pass and sleep for a while
         print("Socket error! Sleep for 5 minutes.")
-        time.sleep(interval)
+        time.sleep(300)
         pass
     time.sleep(interval)
     
