@@ -37,4 +37,3 @@ python download_data.py -t 300 -d data
 | latitude               |    423900  | 緯度              |
 | longitude              |    423900  | 經度              |
 | available_return_bikes |    423900  | 空位數量          |
-
