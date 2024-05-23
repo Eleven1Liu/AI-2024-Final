@@ -16,6 +16,14 @@ python download_data.py -t 300 -d data
 | 2024-05-06 ~ 2024-05-12 |      2 mins     |  大安區 (180 sites) |       4,362 (with data missing in 5/8 caused by socket error)  | https://drive.google.com/file/d/1dRaOBnsf8pavtQtFlDFrM--o09W6CLiZ/view?usp=drive_link |  
 | 2024-05-13 ~ 2024-05-19 |      2 mins     |  大安區 (180 sites) |       5,004      | https://drive.google.com/file/d/10ZNX_Fs73Dod9WoSnm6XonltMY5dtFV-/view?usp=drive_link |
 
+## Meta Data
+
+| File Name                            | Description                         |
+|:-------------------------------------|------------------------------------:|
+| metadata/taipei_mrt_info_utf8.csv    | [臺北捷運車站出入口座標](https://data.taipei/dataset/detail?id=cfa4778c-62c1-497b-b704-756231de348b) UTF8 版本 |
+| metadata/mrt_ubike_shortest_dist.csv | 大安區 ubike 到最近 MRT 站點距離 (公尺) | 
+
+
 ### Columns
 |                        |   NA count |    column names  |
 |:-----------------------|-----------:|-----------------:|
@@ -37,3 +45,4 @@ python download_data.py -t 300 -d data
 | latitude               |    423900  | 緯度              |
 | longitude              |    423900  | 經度              |
 | available_return_bikes |    423900  | 空位數量          |
+
