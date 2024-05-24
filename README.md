@@ -46,3 +46,37 @@ python download_data.py -t 300 -d data
 | longitude              |    423900  | 經度              |
 | available_return_bikes |    423900  | 空位數量          |
 
+## Features
+code: features.ipynb
+google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=sharing
+基於「Processed Data」2024-05-06 ~ 2024-05-12以及2024-05-13 ~ 2024-05-19; interval 2 mins 
+
+| Files                          | Description                         |
+|:-------------------------------------|------------------------------------:|
+| feature_500101001_0.2        | 站點500101001的特徵資料，方便查看| 
+| feature_0.2.csv  | sample rate為0.2的資料|
+| feature_0.4.csv  | sample rate為0.4的資料|
+| feature_1_nontomperal        | sample rate為1，不含時序特徵的資料| 
+
+
+| columes                          | Description                         |
+|:-------------------------------------|------------------------------------:|
+| date_value  | 日期相關number. eg.506|
+| time        | 時間相關number. eg.1101 | 
+| week        | week=1 週中； week=0 週末 | 
+| popularity        | 十大熱門站位10-1，其餘0| 
+| rainfall        | 當日雨量| 
+| see_rate_value        | 見車率1,2,3；見車率未覆蓋站點-1| 
+| mrt_distance        | 到最近捷運距離| 
+| sbi_onehour        | 歷史前一小時數據，2mins為間隔，共30 points，缺失值標記為-1| 
+| sbi_history        | 歷史5天前後兩小時數據，2mins為間隔，(0~5)*60，(0~5取決於是否有歷史數據)| 
+| sbi_onehour        | 歷史前一小時數據，2mins為間隔，共30 points，缺失值標記為-1| 
+| sbi_prediction        | 對當前時間之後一小時的預測（不含當前時間），2mins為間隔，共30 points| 
+| sbi_history_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
+| sbi_prediction_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
+
+
+
+
+
+
