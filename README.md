@@ -47,9 +47,9 @@ python download_data.py -t 300 -d data
 | available_return_bikes |    423900  | 空位數量          |
 
 ## Features
-code: features.ipynb
-google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=sharing
-基於「Processed Data」2024-05-06 ~ 2024-05-12以及2024-05-13 ~ 2024-05-19; interval 2 mins 
+- 基於「Processed Data」2024-05-06 ~ 2024-05-12以及2024-05-13 ~ 2024-05-19; interval 2 mins 
+- code: features.ipynb
+- google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=sharing
 
 | Files                          | Description                         |
 |:-------------------------------------|------------------------------------:|
