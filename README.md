@@ -48,7 +48,7 @@ python download_data.py -t 300 -d data
 
 ## Features
 - 基於「Processed Data」2024-05-06 ~ 2024-05-12以及2024-05-13 ~ 2024-05-19; interval 2 mins 
-- code: features.ipynb
+- code: features.ipynb https://colab.research.google.com/drive/1grd-f810UtMokbN3jeeWvhyV0BrnLXXJ?usp=drive_link
 - google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=sharing
 
 | Files                          | Description                         |
