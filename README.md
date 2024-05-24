@@ -69,7 +69,7 @@ google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR
 | see_rate_value        | 見車率1,2,3；見車率未覆蓋站點-1| 
 | mrt_distance        | 到最近捷運距離| 
 | sbi_onehour        | 歷史前一小時數據，2mins為間隔，共30 points，缺失值標記為-1| 
-| sbi_history        | 歷史5天前後兩小時數據，2mins為間隔，(0~5)*60，(0~5取決於是否有歷史數據)| 
+| sbi_history        | 歷史5天前後兩小時數據，2mins為間隔，(0-5)*60，(0-5取決於是否有歷史數據)| 
 | sbi_onehour        | 歷史前一小時數據，2mins為間隔，共30 points，缺失值標記為-1| 
 | sbi_prediction        | 對當前時間之後一小時的預測（不含當前時間），2mins為間隔，共30 points| 
 | sbi_history_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
