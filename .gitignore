@@ -163,3 +163,4 @@ cython_debug/
 # do not upload data
 *.csv
 data/*
+figs/*
