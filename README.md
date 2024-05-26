@@ -14,7 +14,16 @@ python download_data.py -t 300 -d data
 |                         |  Time Interval  |        Area        |  Size (per site) |  Download Link                                                                        |
 |:------------------------|----------------:|-------------------:|-----------------:|--------------------------------------------------------------------------------------:|
 | 2024-05-06 ~ 2024-05-12 |      2 mins     |  大安區 (180 sites) |       4,362 (with data missing in 5/8 caused by socket error)  | https://drive.google.com/file/d/1dRaOBnsf8pavtQtFlDFrM--o09W6CLiZ/view?usp=drive_link |  
-| 2024-05-13 ~ 2024-05-19 |      2 mins     |  大安區 (180 sites) |       5,004      | https://drive.google.com/file/d/10ZNX_Fs73Dod9WoSnm6XonltMY5dtFV-/view?usp=drive_link |
+|                         |                 |  臺大公館校區 (53 sites) |         | https://drive.google.com/file/d/1lrGFXNFG1jmY7vwoJPdiETVF7AVcC9WJ/view?usp=drive_link | 
+| 2024-05-13 ~ 2024-05-19 |      2 mins     |  大安區 (180 sites)     |       5,004      | https://drive.google.com/file/d/10ZNX_Fs73Dod9WoSnm6XonltMY5dtFV-/view?usp=drive_link |
+|                         |                 |  臺大公館校區 (53 sites) |         | https://drive.google.com/file/d/1ylBo5_aS9EmUx_yV5hs1UjLUyWRyxfus/view?usp=drive_link |
+| 2024-05-20 ~ 2024-05-26 |      2 mins     |  大安區 (180 sites)     |       5,018      | https://drive.google.com/file/d/18I001qKLku85ilSZ6R9gjLZht5crGepQ/view?usp=drive_link |
+|                         |                 |  臺大公館校區 (53 sites) |                  | https://drive.google.com/file/d/1qxRbZD17JWFOUw-UOalGovETPAWH45wV/view?usp=drive_link |
+
+> error files: 
+>   20240510232222.csv,
+>   20240515140202.csv, 
+>   20240520155837.csv, 20240525032928.csv, 20240525033128.csv, 20240525042337.csv, 20240525044540.csv, 20240525054752.csv
 
 ## Meta Data
 
