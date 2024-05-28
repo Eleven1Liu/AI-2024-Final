@@ -63,7 +63,7 @@ python download_data.py -t 300 -d data
 
 | Files                          | Description                         |
 |:-------------------------------------|------------------------------------:|
-| feature_500101001_1        | 站點500101001的特徵資料，方便查看| 
+| feature_500101001_0.4        | 站點500101001的特徵資料，方便查看| 
 | feature_0.2.csv  | sample rate為0.2的資料|
 | feature_0.4.csv  | sample rate為0.4的資料|
 | feature_1_nontomperal        | sample rate為1，不含時序特徵的資料| 
@@ -100,7 +100,11 @@ python download_data.py -t 300 -d data
 | sbi_history_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
 | sbi_prediction_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
 
-
+## Model
+- Temporal CNN:
+   - 架構：t-cnn + fc
+   - 輸入1h序列即其餘features輸出後1h預測；
+  
 
 
 
