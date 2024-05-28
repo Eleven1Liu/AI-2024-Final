@@ -27,10 +27,11 @@ python download_data.py -t 300 -d data
 
 ## Meta Data
 
-| File Name                            | Description                         |
-|:-------------------------------------|------------------------------------:|
+| File Name                            | Primary Key    | Description                         |
+|:-------------------------------------|---------------:|------------------------------------:|
 | metadata/taipei_mrt_info_utf8.csv    | [臺北捷運車站出入口座標](https://data.taipei/dataset/detail?id=cfa4778c-62c1-497b-b704-756231de348b) UTF8 版本 |
-| metadata/mrt_ubike_shortest_dist.csv | 大安區,臺大公館校區 ubike (180+53=233) 到最近 MRT 站點距離 (公尺) | 
+| metadata/mrt_ubike_shortest_dist.csv | mrt_shortname  | 大安區,臺大公館校區 ubike (180+53=233) 到最近 MRT 站點距離 (公尺) | 
+| metadata/april_mrt_traffic.csv       | mrt_shortname  | 2024/04 MRT 分時資料 (12am-1am, 5am-11pm)，可用 `mrt_shortname` join `metadata/mrt_ubike_shortest_dist.csv`, 包含近大安區和臺大公館校區的ubike 站點的捷運站 (古亭, 東門, 台電大樓, 公館, 忠孝新生, 大安森林公園, 忠孝復興, 科技大樓, 大安, 萬隆, 忠孝敦化, 六張犁, 信義安和, 國父紀念館, 麟光) | 
 
 
 ### Columns
