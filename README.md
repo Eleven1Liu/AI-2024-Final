@@ -55,7 +55,7 @@ python download_data.py -t 300 -d data
 | longitude              |    423900  | 經度              |
 | available_return_bikes |    423900  | 空位數量          |
 
-## Features
+## Features v1
 - 基於「Processed Data」2024-05-06 ~ 2024-05-12以及2024-05-13 ~ 2024-05-19; interval 2 mins 
 - code: features.ipynb https://colab.research.google.com/drive/1grd-f810UtMokbN3jeeWvhyV0BrnLXXJ?usp=drive_link
 - google drive: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=sharing
@@ -67,7 +67,18 @@ python download_data.py -t 300 -d data
 | feature_0.4.csv  | sample rate為0.4的資料|
 | feature_1_nontomperal        | sample rate為1，不含時序特徵的資料| 
 
+## Features v2
+- Time: 5/3-5/24;
+- Interval 5 mins
+- Data source: https://drive.google.com/file/d/1vDmGQkM6EJU3T5yLD8CKOcmx0WyjF1kZ/view?usp=sharing
+- Code and features: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=drive_link 
 
+| Files                          | Description                         |
+|:-------------------------------------|------------------------------------:|
+| feature_500101001_1_5mins       | 站點500101001的特徵資料，方便查看| 
+| feature_1_5mins  | sample rate為1的資料|
+
+## Features Description
 | columes                          | Description                         |
 |:-------------------------------------|------------------------------------:|
 | date_value  | 日期相關number. eg.506|
