@@ -71,7 +71,8 @@ python download_data.py -t 300 -d data
 - Time: 5/3-5/24;
 - Interval 5 mins
 - Data source: https://drive.google.com/file/d/1vDmGQkM6EJU3T5yLD8CKOcmx0WyjF1kZ/view?usp=sharing
-- Code and features: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=drive_link 
+- Code: features_v2.ipynb
+- Features: https://drive.google.com/drive/folders/1QVDKGHayxGpnZkQ-VlLFS8HfGR9TO34U?usp=drive_link 
 
 | Files                          | Description                         |
 |:-------------------------------------|------------------------------------:|
