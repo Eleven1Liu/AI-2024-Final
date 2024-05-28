@@ -30,7 +30,7 @@ python download_data.py -t 300 -d data
 | File Name                            | Description                         |
 |:-------------------------------------|------------------------------------:|
 | metadata/taipei_mrt_info_utf8.csv    | [臺北捷運車站出入口座標](https://data.taipei/dataset/detail?id=cfa4778c-62c1-497b-b704-756231de348b) UTF8 版本 |
-| metadata/mrt_ubike_shortest_dist.csv | 大安區 ubike 到最近 MRT 站點距離 (公尺) | 
+| metadata/mrt_ubike_shortest_dist.csv | 大安區,臺大公館校區 ubike (180+53=233) 到最近 MRT 站點距離 (公尺) | 
 
 
 ### Columns
@@ -38,7 +38,7 @@ python download_data.py -t 300 -d data
 |:-----------------------|-----------:|-----------------:|
 | sno                    |         0  | 站點代號           |
 | sna                    |         0  | 場站中文名稱       |
-| sarea                  |         0  | 場站區域 (大同區,信義區,**大安區**,萬華區,中正區,中山區,文山區,北投區,松山區,南港區,臺大公館校區,士林區,內湖區) |
+| sarea                  |         0  | 場站區域 (大同區,信義區,**大安區**,萬華區,中正區,中山區,文山區,北投區,松山區,南港區,**臺大公館校區**,士林區,內湖區) |
 | mday                   |         0  | 資料更新時間       |
 | ar                     |         0  | 地點 (地址)       |
 | sareaen                |         0  | 場站區域英文       |
