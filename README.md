@@ -64,9 +64,9 @@ python download_data.py -t 300 -d data
 | Files                          | Description                         |
 |:-------------------------------------|------------------------------------:|
 | feature_500101001_0.4        | 站點500101001的特徵資料，方便查看| 
-| feature_0.2.csv  | sample rate為0.2的資料|
-| feature_0.4.csv  | sample rate為0.4的資料|
-| feature_1_nontomperal        | sample rate為1，不含時序特徵的資料| 
+| feature_0.2_2mins.csv  | sample rate為0.2的資料|
+| feature_0.4_2mins.csv  | sample rate為0.4的資料|
+| feature_1_nontomperal.csv        | sample rate為1，不含時序特徵的資料| 
 
 - [0528] 更新公館大學區資料 + 0520~0527資料
 
@@ -80,8 +80,8 @@ python download_data.py -t 300 -d data
 
 | Files                          | Description                         |
 |:-------------------------------------|------------------------------------:|
-| feature_500101001_1_5mins       | 站點500101001的特徵資料，方便查看| 
-| feature_1_5mins  | sample rate為1的資料|
+| feature_500101001_1_5mins.csv       | 站點500101001的特徵資料，方便查看| 
+| feature_1_5mins.csv  | sample rate為1的資料|
 
 ## Features Description
 | columes                          | Description                         |
