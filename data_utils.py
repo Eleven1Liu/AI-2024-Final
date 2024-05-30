@@ -25,4 +25,7 @@ def sample_nonan_data(df, features):
     mask = True
     for feature in features:
         mask &= ~(df[feature].isna())
+
+    # dropped_cnt = len(df) - len(df[mask])
+    # print(f'{features}: Dropped {(dropped_cnt*100/len(df)):.2f}% data.')
     return df[mask]

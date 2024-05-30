@@ -1,11 +1,10 @@
 import itertools
 
 import numpy as np
-import pandas as pd
 from sklearn.ensemble import (AdaBoostRegressor, GradientBoostingRegressor,
                               RandomForestRegressor)
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import KFold, train_test_split  # TBD: KFold
 from sklearn.svm import LinearSVC
 
@@ -19,46 +18,89 @@ MODELS = {
     'rf': RandomForestRegressor(),
 }
 
+METRICS = {
+    'mae': mean_absolute_error,
+    'mse': mean_squared_error
+}
+
+
+def do_train(train_data, val_data, features, model_name, target_col='available_rent_bikes', val_metric='mae', normalize=False):
+    # drop instances with missing features
+    train_data = sample_nonan_data(train_data, features)
+    val_data = sample_nonan_data(val_data, features)
+
+    # normalize or not
+    if normalize:
+        train_data = normalize_features(train_data, features)
+        val_data = normalize_features(val_data, features,
+                                      min_values=train_data[features].min(),
+                                      max_values=train_data[features].max())
+
+    # train
+    model = train_by_features(train_data, features, model_name, target_col)
+
+    # validation
+    y_preds = predict_with_indexes(
+        val_data, features, model, is_regressor=not model_name.endswith('_cls'))
+    y_val = val_data[target_col].to_numpy().reshape(-1)
+    score = METRICS[val_metric](y_preds, y_val)
+
+    return score
+
+
+def kfold_feature_selection(data, model_name, candidate_features,
+                            target_col='available_rent_bikes',
+                            min_feature=1, max_feature=5,
+                            prune_threshold=2.0,
+                            val_metric='mae', normalize=False,
+                            kfold=5):
+    """Send different feature combinations to the given model."""
+    score_dict = dict()
+    k_splits = KFold(n_splits=kfold)  # without shuffle
+
+    print(f'Running {kfold}-fold cross validation.')
+    for n_features in range(min_feature, max_feature+1):
+        feature_combs = itertools.combinations(candidate_features, n_features)
+        for features in feature_combs:
+            # k-fold cross validation
+            val_score = 0.
+            for train_idx, val_idx in k_splits.split(data):
+                X_train, X_val = data.iloc[train_idx], data.iloc[val_idx]
+                score = do_train(X_train, X_val, list(features), model_name, target_col, val_metric, normalize)
+                val_score += score
+            score_dict[features] = val_score / kfold  # average score
+            print(f'{features}: {score:.4f} (mean of {kfold}-fold)')
+
+    # Get average CV scores of all features
+    score_dict = {k: v / kfold for k, v in score_dict.items()}
+
+    # Sort by the validation score on the validation set
+    selected_feature_scores = {k: v for k, v in score_dict.items() if v < prune_threshold}
+    return sorted(selected_feature_scores.items(), key=lambda item: item[1])
+
 
 def feature_selection(data, model_name, candidate_features,
                       target_col='available_rent_bikes',
                       min_feature=1, max_feature=5,
-                      val_size=0.2, seed=42,
-                      mae_threshold=2.0, normalize=False):
+                      prune_threshold=2.0,
+                      val_metric='mae', normalize=False,
+                      val_size=0.2, seed=42):
     """Send different feature combinations to the given model."""
-    score_dict = dict()
 
+    # train-val split
+    X_train, X_val, _, _ = train_test_split(data, data[target_col],
+                                            test_size=val_size,
+                                            random_state=seed)
+    score_dict = dict()
     for n_features in range(min_feature, max_feature+1):
         feature_combs = itertools.combinations(candidate_features, n_features)
-
         for features in feature_combs:
-            features = list(features)
-            df_sample = sample_nonan_data(data, features)
-
-            # train-val split
-            X_train, X_val, y_train, y_val = train_test_split(df_sample, df_sample[target_col],
-                                                              test_size=val_size,
-                                                              random_state=seed)
-            if normalize:
-                X_train = normalize_features(X_train, features)
-                X_val = normalize_features(X_val, features,
-                                           min_values=X_train[features].min(),
-                                           max_values=X_train[features].max())
-
-            # train
-            model = train_by_features(X_train, features, model_name, target_col)
-
-            # validation
-            _, y_preds = predict_with_indexes(X_val, features, model, is_regressor=not model_name.endswith('_cls'))
-            df_sample_val = sample_nonan_data(X_val, features)
-            y_val = df_sample_val[target_col].to_numpy().reshape(-1)
-
-            score = mean_absolute_error(y_preds, y_val)
-            score_dict[tuple(features)] = score
-            print(f'{features} ({X_train.shape[0]}, {X_val.shape[0]}): {score:.4f}')
+            score = do_train(X_train, X_val, list(features), model_name, target_col, val_metric, normalize)
+            score_dict[features] = score
+            print(f'{features}: {score:.4f}')
 
     # Sort by the MAE score on the validation set
-    selected_feature_scores = {k: v for k, v in score_dict.items() if v < mae_threshold}
+    selected_feature_scores = {k: v for k, v in score_dict.items() if v < prune_threshold}
     return sorted(selected_feature_scores.items(), key=lambda item: item[1])
 
 
@@ -103,9 +145,8 @@ def train_by_features(train_data, features, model_name, target_col='available_re
     Returns:
         sklearn.*model: model trained by the given features
     """
-    df_sample = sample_nonan_data(train_data, features)
-    X = np.array(df_sample[list(features)].values.tolist())
-    y = df_sample[target_col].to_numpy().reshape(-1)
+    X = np.array(train_data[list(features)].values.tolist())
+    y = train_data[target_col].to_numpy().reshape(-1)
     model = MODELS[model_name]
     model.fit(X, y)
     return model
