@@ -68,8 +68,10 @@ def kfold_feature_selection(data, model_name, candidate_features,
                 X_train, X_val = data.iloc[train_idx], data.iloc[val_idx]
                 score = do_train(X_train, X_val, list(features), model_name, target_col, val_metric, normalize)
                 val_score += score
+                print(f'{features}: {score:.4f}')
+
             score_dict[features] = val_score / kfold  # average score
-            print(f'{features}: {score:.4f} (mean of {kfold}-fold)')
+            print(f'{features}: {score_dict[features]:.4f} (mean of {kfold}-fold)')
 
     # Get average CV scores of all features
     score_dict = {k: v / kfold for k, v in score_dict.items()}
@@ -104,7 +106,7 @@ def feature_selection(data, model_name, candidate_features,
     return sorted(selected_feature_scores.items(), key=lambda item: item[1])
 
 
-def retrain_and_test(train_data, test_data, top_features_combinations, model_name, target_col='available_rent_bikes'):
+def retrain_and_test(train_data, test_data, top_features_combinations, model_name, target_col='available_rent_bikes', log_dir='logs'):
     """Retrain with the whole training data and predict data with all features.
     TBD: dump model
 
@@ -116,6 +118,7 @@ def retrain_and_test(train_data, test_data, top_features_combinations, model_nam
                 (('mrt_distances', 'dayOfWeek', 'hour', 'minute'), 0.4962141397992717), ... ]
         model_name (str): Model name defined in `MODEL` (e.g., ada, gbr, linear, rf).
         target_col (str, optional): Y. Defaults to 'available_rent_bikes'.
+        log_dir (str, optional): Path to the log directory. Defaults to 'logs'.
     """
 
     for features, _ in top_features_combinations:
@@ -124,13 +127,13 @@ def retrain_and_test(train_data, test_data, top_features_combinations, model_nam
         y_preds = predict_with_indexes(
             test_data, features, model, is_regressor=not model_name.endswith('_cls'))
 
-        print(y_preds.shape)
-        # TBD: rewrite logging if there is time ...
+        # drop test data with missing values (TBD: guess with other combinations or predict with missing values)
+        test_data = sample_nonan_data(test_data, features)
         new_preds = test_data.copy()
         new_preds['pred_{target_col}'] = y_preds
-        filename = f'logs/{"_".join(features)}_preds.csv'
+        filename = f'{log_dir}/{"_".join(features)}_preds.csv'
         test_data.to_csv(filename, index=False)
-        print(f'Write predictions to {filename} ({features}).')
+        print(f'Write predictions to {filename} (features: {", ".join(features)}).')
 
 
 def train_by_features(train_data, features, model_name, target_col='available_rent_bikes'):
@@ -164,8 +167,7 @@ def predict_with_indexes(test_data, features, model, is_regressor=True):
     Returns:
         numpy.ndarray: Prediction with shape (# test instances,)
     """
-    df_sample = sample_nonan_data(test_data, features)
-    X_test = np.array(df_sample[list(features)].values.tolist())
+    X_test = np.array(test_data[list(features)].values.tolist())
     y_preds = model.predict(X_test)
     if is_regressor:
         y_preds = np.rint(y_preds)
