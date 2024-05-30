@@ -1,0 +1,28 @@
+
+
+def normalize_features(data, features, min_values=None, max_values=None):
+    """Min/max normalization.
+
+    Args:
+        data (pd.DataFrame): A dataframe with data.
+        features (list): List of feature column names.
+        min_values (float, optional): Given min values for validation. Defaults to None.
+        max_values (float, optional): Given max values for validation. Defaults to None.
+    """
+    normalized_data = data.copy()
+    min_values = min_values if min_values is not None else data[features].min()
+    max_values = max_values if max_values is not None else data[features].max()
+    for feature in features:
+        min_v = min_values[feature]
+        max_v = max_values[feature]
+        normalized_data[feature] = (data[feature] - min_v) / (max_v-min_v)
+
+    return normalized_data[features]
+
+
+def sample_nonan_data(df, features):
+    """Filter examples if all of the given features is not None."""
+    mask = True
+    for feature in features:
+        mask &= ~(df[feature].isna())
+    return df[mask]

@@ -1,12 +1,12 @@
-
 import itertools
 
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import (AdaBoostRegressor, GradientBoostingRegressor,
                               RandomForestRegressor)
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import KFold, train_test_split  # TBD: KFold
 from sklearn.svm import LinearSVC
 
 from data_utils import normalize_features, sample_nonan_data
@@ -42,15 +42,14 @@ def feature_selection(data, model_name, candidate_features,
             if normalize:
                 X_train = normalize_features(X_train, features)
                 X_val = normalize_features(X_val, features,
-                                           min_values = X_train[features].min(),
-                                           max_values = X_train[features].max())
+                                           min_values=X_train[features].min(),
+                                           max_values=X_train[features].max())
 
             # train
             model = train_by_features(X_train, features, model_name, target_col)
 
             # validation
-            _, y_preds = predict_with_indexes(
-                X_val, features, model, is_regressor=not model_name.endswith('_cls'))
+            _, y_preds = predict_with_indexes(X_val, features, model, is_regressor=not model_name.endswith('_cls'))
             df_sample_val = sample_nonan_data(X_val, features)
             y_val = df_sample_val[target_col].to_numpy().reshape(-1)
 
@@ -63,8 +62,47 @@ def feature_selection(data, model_name, candidate_features,
     return sorted(selected_feature_scores.items(), key=lambda item: item[1])
 
 
+def retrain_and_test(train_data, test_data, top_features_combinations, model_name, target_col='available_rent_bikes'):
+    """Retrain with the whole training data and predict data with all features.
+    TBD: dump model
+
+    Args:
+        train_data (pd.DataFrame): Training data containing features and target values.
+        test_data (pd.DataFrame): Test data containing features and target values.
+        top_features_combinations (List[tuple]): List of feature column names in `train_data`.
+            [   (('total', 'mrt_distances', 'dayOfWeek', 'hour', 'minute'), 0.4941824318323119),
+                (('mrt_distances', 'dayOfWeek', 'hour', 'minute'), 0.4962141397992717), ... ]
+        model_name (str): Model name defined in `MODEL` (e.g., ada, gbr, linear, rf).
+        target_col (str, optional): Y. Defaults to 'available_rent_bikes'.
+    """
+
+    for features, _ in top_features_combinations:
+        features = list(features)
+        model = train_by_features(train_data, features, model_name, target_col)
+        y_preds = predict_with_indexes(
+            test_data, features, model, is_regressor=not model_name.endswith('_cls'))
+
+        print(y_preds.shape)
+        # TBD: rewrite logging if there is time ...
+        new_preds = test_data.copy()
+        new_preds['pred_{target_col}'] = y_preds
+        filename = f'logs/{"_".join(features)}_preds.csv'
+        test_data.to_csv(filename, index=False)
+        print(f'Write predictions to {filename} ({features}).')
+
 
 def train_by_features(train_data, features, model_name, target_col='available_rent_bikes'):
+    """Train model.
+
+    Args:
+        train_data (pd.DataFrame): Training data containing features and target values.
+        features (List[str]): List of feature column names in `train_data`.
+        model_name (str): Model name defined in `MODEL` (e.g., ada, gbr, linear, rf).
+        target_col (str, optional): Y. Defaults to 'available_rent_bikes'.
+
+    Returns:
+        sklearn.*model: model trained by the given features
+    """
     df_sample = sample_nonan_data(train_data, features)
     X = np.array(df_sample[list(features)].values.tolist())
     y = df_sample[target_col].to_numpy().reshape(-1)
@@ -74,10 +112,20 @@ def train_by_features(train_data, features, model_name, target_col='available_re
 
 
 def predict_with_indexes(test_data, features, model, is_regressor=True):
+    """Test model
+
+    Args:
+        test_data (pd.DataFrame): Test data containing features and target values.
+        features (List[str]): List of feature column names in `train_data`.
+        model (sklearn.*model): A sklearn model.
+        is_regressor (bool, optional): Whether the given model is a regressor or not. Defaults to True.
+
+    Returns:
+        numpy.ndarray: Prediction with shape (# test instances,)
+    """
     df_sample = sample_nonan_data(test_data, features)
     X_test = np.array(df_sample[list(features)].values.tolist())
     y_preds = model.predict(X_test)
     if is_regressor:
         y_preds = np.rint(y_preds)
-    indexes = df_sample.index.tolist()
-    return indexes, y_preds
+    return y_preds
