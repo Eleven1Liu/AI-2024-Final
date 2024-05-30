@@ -1,6 +1,8 @@
+import collections
 import itertools
 
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import (AdaBoostRegressor, GradientBoostingRegressor,
                               RandomForestRegressor)
 from sklearn.linear_model import LinearRegression
@@ -108,7 +110,6 @@ def feature_selection(data, model_name, candidate_features,
 
 def retrain_and_test(train_data, test_data, top_features_combinations, model_name, target_col='available_rent_bikes', log_dir='logs'):
     """Retrain with the whole training data and predict data with all features.
-    TBD: dump model
 
     Args:
         train_data (pd.DataFrame): Training data containing features and target values.
@@ -121,19 +122,24 @@ def retrain_and_test(train_data, test_data, top_features_combinations, model_nam
         log_dir (str, optional): Path to the log directory. Defaults to 'logs'.
     """
 
+    preds_dict = collections.defaultdict(list)
+
     for features, _ in top_features_combinations:
         features = list(features)
+        train_data = sample_nonan_data(train_data, features)
         model = train_by_features(train_data, features, model_name, target_col)
-        y_preds = predict_with_indexes(
-            test_data, features, model, is_regressor=not model_name.endswith('_cls'))
 
         # drop test data with missing values (TBD: guess with other combinations or predict with missing values)
-        test_data = sample_nonan_data(test_data, features)
-        new_preds = test_data.copy()
-        new_preds['pred_{target_col}'] = y_preds
-        filename = f'{log_dir}/{"_".join(features)}_preds.csv'
-        test_data.to_csv(filename, index=False)
-        print(f'Write predictions to {filename} (features: {", ".join(features)}).')
+        # figure out how to deal with missing values
+        sampled_test_data = sample_nonan_data(test_data, features)
+        y_preds = predict_with_indexes(
+            sampled_test_data, features, model, is_regressor=not model_name.endswith('_cls'))
+        preds_dict['features'].append(features)
+        preds_dict[f'pred_{target_col}'].append(y_preds)
+
+    filename = f'{log_dir}/predictions.csv'
+    pd.DataFrame(preds_dict).to_csv(filename, index=False)
+    print(f'Write predictions to {filename}')
 
 
 def train_by_features(train_data, features, model_name, target_col='available_rent_bikes'):

@@ -18,8 +18,8 @@ def main():
     parser.add_argument('--log_dir', type=str, default='logs', help='Path to test data')
     parser.add_argument('--model_name', type=str, choices=['ada', 'gbr', 'linear', 'linear_cls', 'rf'],
                         default='rf', help='Abbr. for each models')
-    parser.add_argument('--max_features', type=int, default=1, help='Maximum number of features')
     parser.add_argument('--min_features', type=int, default=1, help='Minimum number of features')
+    parser.add_argument('--max_features', type=int, default=5, help='Maximum number of features')
     parser.add_argument('--val_size', type=float, default=0.2, help='Ratio of the validation set')
     parser.add_argument('--seed', type=int, default=42, help='Seed everywhere')
     parser.add_argument('--kfold', type=int, default=None, help='Number of fold for cross validation')
@@ -36,7 +36,7 @@ def main():
 
     # Setup X, y
     y_col = 'available_rent_bikes'
-    candidate_feature_cols = ['total', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour', 'minute']
+    candidate_feature_cols = ['total', 'person_time', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour', 'minute']
 
     if args.pretrained_feature_file is not None:
         # load from pretrained
