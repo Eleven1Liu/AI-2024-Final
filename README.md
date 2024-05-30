@@ -105,8 +105,8 @@ python download_data.py -t 300 -d data
 - Temporal CNN:
    - 架構：t-cnn + fc
    - 輸入1h序列即其餘features輸出後1h預測；
-  
 
-
-
-
+- RandomForestRegressor
+   - 架構： Feature selection + Random Forest Regressor
+   - Train (20240513-20240519, 2 mins): 取 MAE score < 1.9 的 feature combinations
+   - Test (20240520-20240526, 2 mins): Pick the best model or ensemble (TBD)

@@ -32,11 +32,11 @@ def main():
     # create log dir
     log_dir = f'{args.log_dir}/{datetime.now().strftime("%Y%m%d%H%M%S")}'
     os.makedirs(log_dir, exist_ok=True)
-    cpu_count = min(os.cpu_count(), 16)
+    cpu_count = min(os.cpu_count(), 8)
 
     # Setup X, y
     y_col = 'available_rent_bikes'
-    candidate_feature_cols = ['total', 'person_time', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour', 'minute']
+    candidate_feature_cols = ['total', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour', 'minute']
 
     if args.pretrained_feature_file is not None:
         # load from pretrained
@@ -57,13 +57,14 @@ def main():
                 'min_feature': args.min_features,
                 'max_feature': args.max_features,
                 'prune_threshold': args.prune_threshold,
-                'normalize': args.normalize
+                'normalize': args.normalize,
+                'seed': args.seed
             }
 
             if args.kfold is not None:
                 selected_features = kfold_feature_selection(kfold=args.kfold, **kwargs)
             elif args.val_size is not None:
-                selected_features = feature_selection(val_size=args.val_size, seed=args.seed, **kwargs)
+                selected_features = feature_selection(val_size=args.val_size, **kwargs)
 
             # dump logs and features
             with open(f'{log_dir}/logs.json', 'w', encoding="utf-8") as f:

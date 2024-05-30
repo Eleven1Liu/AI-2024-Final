@@ -55,10 +55,10 @@ def kfold_feature_selection(data, model_name, candidate_features,
                             min_feature=1, max_feature=5,
                             prune_threshold=2.0,
                             val_metric='mae', normalize=False,
-                            kfold=5):
+                            kfold=5, seed=42):
     """Send different feature combinations to the given model."""
     score_dict = dict()
-    k_splits = KFold(n_splits=kfold)  # without shuffle
+    k_splits = KFold(n_splits=kfold, shuffle=True, random_state=seed)  # shuffle to get instance everywhere
 
     print(f'Running {kfold}-fold cross validation.')
     for n_features in range(min_feature, max_feature+1):
