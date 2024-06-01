@@ -110,3 +110,4 @@ python download_data.py -t 300 -d data
    - 架構： Feature selection + Random Forest Regressor
    - Train (20240513-20240519, 2 mins): 取 MAE score < 1.9 的 feature combinations
    - Test (20240520-20240526, 2 mins): Pick the best model or ensemble (TBD)
+   - 6/1 add XGBoost model, Google drive link: https://drive.google.com/drive/folders/1pwDhRUEq1oa1KtdOdcjQoT58BCyHia04?usp=sharing
