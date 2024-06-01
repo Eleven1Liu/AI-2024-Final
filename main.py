@@ -36,7 +36,8 @@ def main():
 
     # Setup X, y
     y_col = 'available_rent_bikes'
-    candidate_feature_cols = ['total', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour', 'minute']
+    candidate_feature_cols = ['total', 'mrt_distances', 'person_time', 'dayOfWeek', 'hour',
+                              'minute'] + [f'available_return_bikes_prev_{i}mins' for i in [2, 4, 10, 20, 30, 60]]
 
     if args.pretrained_feature_file is not None:
         # load from pretrained

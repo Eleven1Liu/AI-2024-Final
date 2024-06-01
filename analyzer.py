@@ -1,13 +1,13 @@
 import collections
 import itertools
+import pickle
 
 import numpy as np
-import pandas as pd
 from sklearn.ensemble import (AdaBoostRegressor, GradientBoostingRegressor,
                               RandomForestRegressor)
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.model_selection import KFold, train_test_split  # TBD: KFold
+from sklearn.model_selection import KFold, train_test_split
 from sklearn.svm import LinearSVC
 
 from data_utils import normalize_features, sample_nonan_data
@@ -75,9 +75,6 @@ def kfold_feature_selection(data, model_name, candidate_features,
             score_dict[features] = val_score / kfold  # average score
             print(f'{features}: {score_dict[features]:.4f} (mean of {kfold}-fold)')
 
-    # Get average CV scores of all features
-    score_dict = {k: v / kfold for k, v in score_dict.items()}
-
     # Sort by the validation score on the validation set
     selected_feature_scores = {k: v for k, v in score_dict.items() if v < prune_threshold}
     return sorted(selected_feature_scores.items(), key=lambda item: item[1])
@@ -137,9 +134,12 @@ def retrain_and_test(train_data, test_data, top_features_combinations, model_nam
         preds_dict['features'].append(features)
         preds_dict[f'pred_{target_col}'].append(y_preds)
 
-    filename = f'{log_dir}/predictions.csv'
-    pd.DataFrame(preds_dict).to_csv(filename, index=False)
-    print(f'Write predictions to {filename}')
+    # pandas is too slow here, use pkl
+    filename = f'{log_dir}/predictions.pkl'
+    print(f'Write predictions to {filename}.')
+    with open(filename, 'wb') as f:
+        pickle.dump(preds_dict, f)
+    # pd.DataFrame(preds_dict).to_csv(filename, index=False)
 
 
 def train_by_features(train_data, features, model_name, target_col='available_rent_bikes'):
