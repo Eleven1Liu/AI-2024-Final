@@ -1,20 +1,20 @@
 import collections
 import itertools
-import pickle
 
 import numpy as np
 from sklearn.ensemble import (AdaBoostRegressor, GradientBoostingRegressor,
                               RandomForestRegressor)
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.svm import LinearSVC
 
-from data_utils import normalize_features, sample_nonan_data
+from data_utils import dump_pickle, normalize_features, sample_nonan_data
 
+# For ensemble.*Regressor, default loss is `squared_error`.
 MODELS = {
     'ada': AdaBoostRegressor(),
-    'gbr': GradientBoostingRegressor(loss='absolute_error'),
+    'gbr': GradientBoostingRegressor(),
     'linear': LinearRegression(),
     'linear_cls': LinearSVC(),
     'rf': RandomForestRegressor(),
@@ -105,6 +105,36 @@ def feature_selection(data, model_name, candidate_features,
     return sorted(selected_feature_scores.items(), key=lambda item: item[1])
 
 
+def grid_search(train_data, features, model_name, parameters, target_col='available_rent_bikes', kfold=5, seed=42):
+    """Grid search.
+
+    Args:
+        train_data (pd.DataFrame): Training data containing features and target values.
+        features (List[str]): List of feature column names in `train_data`.
+        model_name (str): Model name defined in `MODEL` (e.g., ada, gbr, linear, rf).
+        parameters (dict): A dictionary of parameter names and their list of candidates. For example,
+            parameters = {
+                'n_estimators': [100, 150],
+                'max_depth': [5, 10, 20, 30],
+            }
+        target_col (str, optional): Y. Defaults to 'available_rent_bikes'.
+        kfold (int, optional): Number of fold for cross validation. Defaults to 5.
+        seed (int, optional): Random seed for cross validation. Defaults to 42.
+
+    Returns:
+        sklearn.model_selection._search.GridSearchCV: model trained by the given features
+    """
+    model = MODELS[model_name]
+    k_splits = KFold(n_splits=kfold, shuffle=True, random_state=seed)  # shuffle to get instance everywhere
+    clf = GridSearchCV(model, parameters, cv=k_splits)
+    X = np.array(train_data[list(features)].values.tolist())
+    y = train_data[target_col].to_numpy().reshape(-1)
+    clf.fit(X, y)
+    print(f'Best parameters: {clf.best_params_}.')
+
+    return clf
+
+
 def retrain_and_test(train_data, test_data, top_features_combinations, model_name, target_col='available_rent_bikes', log_dir='logs'):
     """Retrain with the whole training data and predict data with all features.
 
@@ -136,13 +166,30 @@ def retrain_and_test(train_data, test_data, top_features_combinations, model_nam
 
     # pandas is too slow here, use pkl
     filename = f'{log_dir}/predictions.pkl'
-    print(f'Write predictions to {filename}.')
-    with open(filename, 'wb') as f:
-        pickle.dump(preds_dict, f)
-    # pd.DataFrame(preds_dict).to_csv(filename, index=False)
+    dump_pickle(filename, preds_dict)
 
 
-def train_by_features(train_data, features, model_name, target_col='available_rent_bikes'):
+def retrain_with_best_params_and_test(train_data, test_data, features, model_name, best_params, target_col='available_rent_bikes', log_dir='logs'):
+    preds_dict = collections.defaultdict(list)
+
+    train_data = sample_nonan_data(train_data, features)
+    model = train_by_features(train_data, features, model_name, target_col, params=best_params)
+
+    # test
+    sampled_test_data = sample_nonan_data(test_data, features)
+    y_preds = predict_with_indexes(
+        sampled_test_data, features, model, is_regressor=not model_name.endswith('_cls'))
+
+    preds_dict['features'].append(features)
+    preds_dict['best_params'].append(best_params)
+    preds_dict[f'pred_{target_col}'].append(y_preds)
+
+    # pandas is too slow here, use pkl
+    filename = f'{log_dir}/predictions.pkl'
+    dump_pickle(filename, preds_dict)
+
+
+def train_by_features(train_data, features, model_name, target_col='available_rent_bikes', params=None):
     """Train model.
 
     Args:
@@ -157,6 +204,8 @@ def train_by_features(train_data, features, model_name, target_col='available_re
     X = np.array(train_data[list(features)].values.tolist())
     y = train_data[target_col].to_numpy().reshape(-1)
     model = MODELS[model_name]
+    if params is not None:
+        model.set_params(**params)
     model.fit(X, y)
     return model
 

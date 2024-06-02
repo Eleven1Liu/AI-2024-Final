@@ -1,3 +1,4 @@
+import pickle
 
 
 def normalize_features(data, features, min_values=None, max_values=None):
@@ -29,3 +30,10 @@ def sample_nonan_data(df, features):
     # dropped_cnt = len(df) - len(df[mask])
     # print(f'{features}: Dropped {(dropped_cnt*100/len(df)):.2f}% data.')
     return df[mask]
+
+
+def dump_pickle(filename, data):
+    """Dump data to file name."""
+    print(f'Write predictions to {filename}.')
+    with open(filename, 'wb') as f:
+        pickle.dump(data, f)
