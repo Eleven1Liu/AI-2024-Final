@@ -15,9 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_data', type=str, default='data/train.csv', help='Path to training data')
     parser.add_argument('--test_data', type=str, default='data/test.csv', help='Path to test data')
-    parser.add_argument('--pretrained_feature_file', type=str, default=None, help='Path to pretrained feature.')
-    parser.add_argument('--pretrained_grid_file', type=str, default=None,
-                        help='Path to pretrained grid search results (e.g., */grid_model.pkl)')
+    parser.add_argument('--pretrained_file', type=str, default=None, help='Path to pretrained feature or pretrained grid search results (e.g., */grid_model.pkl)')
     parser.add_argument('--log_dir', type=str, default='logs', help='Path to test data')
     parser.add_argument('--model_name', type=str, choices=['ada', 'gbr', 'linear', 'linear_cls', 'rf'],
                         default='rf', help='Abbr. for each models')
@@ -50,17 +48,19 @@ def main():
                               'minute'] + [f'available_rent_bikes_prev_{i}mins' for i in [2, 4, 10, 20, 30, 60]]
     is_ensemble_model = getattr(MODELS[args.model_name], '__module__', '').startswith('sklearn.ensemble')
 
-    # train
+    # Load data
     if os.path.exists(args.train_data):
         train_data = pd.read_csv(args.train_data)
         print(f'Finish reading {len(train_data)} train instances from {args.train_data}.')
 
+    # train
+    if args.pretrained_file is None:
         with parallel_backend('threading', n_jobs=cpu_count):
             if is_ensemble_model:
                 # For models aggregate multiple estimators, no need to do feature selection.
                 # Grid search the parameters (for avoiding overfitting issues)
                 parameters = {  # hard code for now
-                    'n_estimators': [100, 150],
+                    'n_estimators': [100],
                     'max_depth': [5, 10, 20, 30],
                 }
                 cls = grid_search(train_data, candidate_feature_cols, args.model_name,
@@ -68,6 +68,7 @@ def main():
                                   kfold=args.kfold, seed=args.seed)
                 best_params = cls.best_params_
                 config['best_params'] = best_params
+                pretrained_data = cls # for testing
                 with open(f'{log_dir}/grid_model.pkl', 'wb') as f:
                     pickle.dump(cls, f)
             else:
@@ -89,35 +90,33 @@ def main():
                     selected_features = feature_selection(val_size=args.val_size, **kwargs)
 
                 config['selected_features'] = selected_features
+                pretrained_data = selected_features # for testing
                 with open(f'{log_dir}/selected_features.pkl', 'wb') as f:
                     pickle.dump(selected_features, f)
 
         # dump logs
         with open(f'{log_dir}/logs.json', 'w', encoding="utf-8") as f:
             json.dump(config, f)
+    
     # test
     if os.path.exists(args.test_data):
         test_data = pd.read_csv(args.test_data)
-
+        print(f'Finish reading {len(test_data)} train instances from {args.test_data}.')
+        
+        if args.pretrained_file is not None:
+            # load from pretrained data (grid search: best params, feature selection: best params)
+            with open(args.pretrained_file, 'rb') as f:
+                pretrained_data = pickle.load(f)
+                print(f'Load pretrained data from {args.pretrained_file}')
+        
         # Train model with top-k features
-        # load from pretrained
         if is_ensemble_model:
-            # load from past grid search results
-            if args.pretrained_grid_file is not None:
-                with open(args.pretrained_grid_file, 'rb') as f:
-                    cls = pickle.load(f)
-                best_params = cls.best_params_
-
+            best_params = pretrained_data.best_params_
             retrain_with_best_params_and_test(train_data, test_data, candidate_feature_cols,
                                               args.model_name, best_params=best_params,
                                               target_col=y_col, log_dir=log_dir)
-
         else:
-            # load from pretrained features from file
-            if args.pretrained_feature_file is not None:
-                with open(args.pretrained_feature_file, 'rb') as f:
-                    selected_features = pickle.load(f)
-            print(f'Load pretrained features from {args.pretrained_feature_file}')
+            selected_features = pretrained_data
             retrain_and_test(train_data, test_data, selected_features, args.model_name,
                              target_col=y_col, log_dir=log_dir)
 

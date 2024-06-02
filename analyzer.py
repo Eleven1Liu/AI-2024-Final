@@ -124,9 +124,15 @@ def grid_search(train_data, features, model_name, parameters, target_col='availa
     Returns:
         sklearn.model_selection._search.GridSearchCV: model trained by the given features
     """
+    # drop instances with missing features
+    train_data = sample_nonan_data(train_data, features)
+    
+    # Setup grid search
     model = MODELS[model_name]
     k_splits = KFold(n_splits=kfold, shuffle=True, random_state=seed)  # shuffle to get instance everywhere
     clf = GridSearchCV(model, parameters, cv=k_splits)
+    
+    # Fit    
     X = np.array(train_data[list(features)].values.tolist())
     y = train_data[target_col].to_numpy().reshape(-1)
     clf.fit(X, y)
