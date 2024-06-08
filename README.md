@@ -1,6 +1,7 @@
 # AI Term Project
 
 ## Collect Data
+Collect data from [YouBike2.0臺北市公共自行車即時資訊](https://data.gov.tw/dataset/137993).
 
 ```bash
 python download_data.py -t 300 -d data 
@@ -11,6 +12,8 @@ python download_data.py -t 300 -d data
 
 
 ## Processed Data
+Filter out 234 stations in the NTU Gongguan area and Daan District.
+
 |                         |  Time Interval  |        Area        |  Size (per site) |  Download Link                                                                        |
 |:------------------------|----------------:|-------------------:|-----------------:|--------------------------------------------------------------------------------------:|
 | 2024-05-06 ~ 2024-05-12 |      2 mins     |  大安區 (180 sites) |       4,362 (with data missing in 5/8 caused by socket error)  | https://drive.google.com/file/d/1dRaOBnsf8pavtQtFlDFrM--o09W6CLiZ/view?usp=drive_link |  
@@ -20,10 +23,6 @@ python download_data.py -t 300 -d data
 | 2024-05-20 ~ 2024-05-26 |      2 mins     |  大安區 (180 sites)     |       5,018      | https://drive.google.com/file/d/18I001qKLku85ilSZ6R9gjLZht5crGepQ/view?usp=drive_link |
 |                         |                 |  臺大公館校區 (53 sites) |                  | https://drive.google.com/file/d/1qxRbZD17JWFOUw-UOalGovETPAWH45wV/view?usp=drive_link |
 
-> error files: 
->   20240510232222.csv,
->   20240515140202.csv, 
->   20240520155837.csv, 20240525032928.csv, 20240525033128.csv, 20240525042337.csv, 20240525044540.csv, 20240525054752.csv
 
 ## Meta Data
 
@@ -101,13 +100,13 @@ python download_data.py -t 300 -d data
 | sbi_history_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
 | sbi_prediction_mask        | 標記是否為缺失值的mask(transformer會用到)，True為缺失值(-1)False為正常值| 
 
-## Model
+## Models
 - Temporal CNN:
    - 架構：t-cnn + fc
    - 輸入1h序列即其餘features輸出後1h預測；
 
 - RandomForestRegressor
-   - 架構： Feature selection + Random Forest Regressor
+   - 架構： Feature selection + Random Forest Regressor (see [main.py](https://github.com/Eleven1Liu/AI-2024-Final/blob/master/main.py))
    - Train (20240513-20240519, 2 mins): 取 MAE score < 1.9 的 feature combinations
    - Test (20240520-20240526, 2 mins): Pick the best model or ensemble (TBD)
    - 6/1 add XGBoost model, Google drive link: https://drive.google.com/drive/folders/1pwDhRUEq1oa1KtdOdcjQoT58BCyHia04?usp=sharing
